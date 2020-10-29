@@ -33,11 +33,11 @@ if (Locale == "deDE") then -- German
 	L["Left click: Toggle timer"] = "Linksklick: Timer anhalten/fortsetzen"
 	L["Right click: Reset data"] = "Rechtsklick: Daten zur\195\188cksetzen"
 	L["Hr"] = "Std."
-	
+
 	L["You must wait %s until you can scan again."] = "Du musst %s warten bevor du wieder scannen kannst."
 	L["|cff00CC6AGathering|r is scanning market prices. This should take less than 10 seconds."] = "|cff00CC6AGathering|r scannt gerade die Marktpreise, dies sollte weniger als 10 Sekunden dauern."
 	L["|cff00CC6AGathering|r updated market prices."] = "|cff00CC6AGathering|r hat die Marktpreise aktualisiert"
-	
+
 	L["Ore"] = "Erz"
 	L["Herbs"] = "Kr\195\164uter"
 	L["Leather"] = "Leder"
@@ -332,7 +332,7 @@ local Outline = {
 }
 
 -- Header
-local Gathering = CreateFrame("Frame", "Gathering Header", UIParent)
+local Gathering = CreateFrame("Frame", "Gathering Header", UIParent, "BackdropTemplate")
 Gathering:SetSize(140, 28)
 Gathering:SetPoint("TOP", UIParent, 0, -100)
 Gathering:SetBackdrop({bgFile = "Interface/Tooltips/UI-Tooltip-Background", edgeFile = "Interface/Tooltips/UI-Tooltip-Border", tile = true, tileSize = 16, edgeSize = 16, insets = {left = 4, right = 4, top = 4, bottom = 4}})
@@ -374,7 +374,6 @@ Gathering.DefaultSettings = {
 	["track-jewelcrafting"] = true,
 	["track-weapons"] = false,
 	["track-armor"] = false,
-	["track-pets"] = false,
 	["track-mounts"] = false,
 	["track-consumables"] = false,
 	["track-reagents"] = false,
@@ -392,7 +391,6 @@ Gathering.TrackedItemTypes = {
 	[LE_ITEM_CLASS_ARMOR] = {},
 	[LE_ITEM_CLASS_TRADEGOODS] = {},
 	[LE_ITEM_CLASS_MISCELLANEOUS] = {},
-	--[LE_ITEM_CLASS_BATTLEPET] = {},
 }
 
 function Gathering:UpdateWeaponTracking(value)
@@ -453,10 +451,6 @@ end
 
 function Gathering:UpdateEnchantingTracking(value)
 	Gathering.TrackedItemTypes[LE_ITEM_CLASS_TRADEGOODS][12] = value
-end
-
-function Gathering:UpdatePetTracking(value)
-	Gathering.TrackedItemTypes[LE_ITEM_CLASS_MISCELLANEOUS][LE_ITEM_MISCELLANEOUS_COMPANION_PET] = value
 end
 
 function Gathering:UpdateHolidayTracking(value)
@@ -991,7 +985,7 @@ function Gathering:CreateGUI()
 	self.GUI.ButtonParent:SetFrameStrata("HIGH")
 	self.GUI.ButtonParent:EnableMouse(true)
 	
-	self.GUI.OuterBackdrop = CreateFrame("Frame", nil, self.GUI.Window)
+	self.GUI.OuterBackdrop = CreateFrame("Frame", nil, self.GUI.Window, "BackdropTemplate")
 	self.GUI.OuterBackdrop:SetPoint("TOPLEFT", self.GUI, -4, 4)
 	self.GUI.OuterBackdrop:SetPoint("BOTTOMRIGHT", self.GUI.Window, 4, -4)
 	self.GUI.OuterBackdrop:SetBackdrop(Outline)
@@ -1030,7 +1024,7 @@ function Gathering:CreateGUI()
 	self:CreateEditBox(L["Unignore items"], self.RemoveIgnoredItem)
 	
 	-- Scroll bar
-	self.GUI.Window.ScrollBar = CreateFrame("Slider", nil, self.GUI.ButtonParent)
+	self.GUI.Window.ScrollBar = CreateFrame("Slider", nil, self.GUI.ButtonParent, "BackdropTemplate")
 	self.GUI.Window.ScrollBar:SetPoint("TOPRIGHT", self.GUI.Window, -2, -2)
 	self.GUI.Window.ScrollBar:SetPoint("BOTTOMRIGHT", self.GUI.Window, -2, 2)
 	self.GUI.Window.ScrollBar:SetWidth(14)
@@ -1249,6 +1243,7 @@ end
 function Gathering:GetPrice(id, link)
 	if self.HasTSM then
 		return TSM_API.GetCustomPriceValue("dbMarket", TSM_API.ToItemString(link))
+		--return TSM_API.GetCustomPriceValue("dbMinBuyout", TSM_API.ToItemString(link))
 	else
 		return self.MarketPrices[id]
 	end
